@@ -1,164 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coffee Tracker | JavaJolt Junkies</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
-    <link rel="manifest" href="/manifest.json">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f5f5f5;
-        }
-        .coffee-card {
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .coffee-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
-        }
-        .pulse {
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Coffee Tracker | JavaJolt Junkies</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/feather-icons"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #fff7ed, #fde68a);
+    }
+    .coffee-card {
+      transition: all 0.3s ease;
+    }
+    .coffee-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-amber-50 to-amber-100">
-    <div class="container mx-auto px-4 py-8">
-        <header class="text-center mb-12">
-            <h1 class="text-4xl md:text-5xl font-bold text-amber-900 mb-4">
-                JavaJolt Junkies <i data-feather="coffee" class="inline"></i>
-            </h1>
-            <p class="text-lg text-amber-800 max-w-2xl mx-auto">
-                Track your office coffee addiction with style and a dash of friendly competition!
-            </p>
-        </header>
+<body class="min-h-screen flex flex-col justify-between">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <!-- Scan Card -->
-            <div class="coffee-card bg-white rounded-xl p-6">
-                <div class="flex items-center mb-4">
-                    <div class="bg-amber-100 p-3 rounded-full mr-4">
-                        <i data-feather="smartphone" class="text-amber-600"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold text-amber-900">Quick Scan</h2>
-                </div>
-                <p class="text-amber-800 mb-6">
-                    Scan the QR code to log your coffee consumption instantly!
-                </p>
-                <div class="bg-white p-4 rounded-lg border border-amber-200 mb-6 flex justify-center">
-    <img src="/kava2/qr_k2.png" alt="QR Code" class="w-48 h-48 rounded-lg object-cover">
-</div>
+  <header class="text-center mt-10 mb-8">
+    <h1 class="text-5xl font-extrabold text-amber-900 flex items-center justify-center gap-2">
+      JavaJolt Junkies <i data-feather="coffee" class="text-amber-700 w-8 h-8"></i>
+    </h1>
+    <p class="text-amber-800 mt-2 text-lg">Track your team’s coffee intake with style ☕</p>
+  </header>
 
-                <a href="/kava2/scan" class="block w-full bg-amber-600 hover:bg-amber-700 text-white text-center py-3 px-4 rounded-lg font-medium transition duration-300">
-                    Go to Scan Page
-                </a>
-            </div>
-
-            <!-- Stats Card -->
-            <div class="coffee-card bg-white rounded-xl p-6">
-                <div class="flex items-center mb-4">
-                    <div class="bg-amber-100 p-3 rounded-full mr-4">
-                        <i data-feather="bar-chart-2" class="text-amber-600"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold text-amber-900">Leaderboard</h2>
-                </div>
-                <p class="text-amber-800 mb-6">
-                    See who's leading the caffeinated race in your office!
-                </p>
-                <div class="mb-6">
-                    <div class="flex items-center justify-between py-2 border-b border-amber-100">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center mr-3">
-                                <i data-feather="award" class="text-amber-600 text-sm"></i>
-                            </div>
-                            <span class="font-medium">Coffee Master</span>
-                        </div>
-                        <span class="font-bold text-amber-700">42 ☕</span>
-                    </div>
-                    <div class="flex items-center justify-between py-2 border-b border-amber-100">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-amber-50 rounded-full flex items-center justify-center mr-3">
-                                <span class="text-amber-600 font-medium">2</span>
-                            </div>
-                            <span>Runner Up</span>
-                        </div>
-                        <span class="font-medium text-amber-600">36 ☕</span>
-                    </div>
-                    <div class="flex items-center justify-between py-2">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 bg-amber-50 rounded-full flex items-center justify-center mr-3">
-                                <span class="text-amber-600 font-medium">3</span>
-                            </div>
-                            <span>Third Place</span>
-                        </div>
-                        <span class="font-medium text-amber-600">28 ☕</span>
-                    </div>
-                </div>
-                <a href="/kava2/stats" class="block w-full bg-amber-600 hover:bg-amber-700 text-white text-center py-3 px-4 rounded-lg font-medium transition duration-300">
-                    View Full Leaderboard
-                </a>
-            </div>
-        </div>
-
-        <div class="max-w-4xl mx-auto mt-12">
-            <div class="coffee-card bg-white rounded-xl p-6">
-                <h2 class="text-2xl font-bold text-amber-900 mb-4">How It Works</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="text-center">
-                        <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i data-feather="user" class="text-amber-600"></i>
-                        </div>
-                        <h3 class="font-bold text-amber-800 mb-2">1. Login</h3>
-                        <p class="text-amber-700">Use Google or select your name</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i data-feather="scan" class="text-amber-600"></i>
-                        </div>
-                        <h3 class="font-bold text-amber-800 mb-2">2. Scan</h3>
-                        <p class="text-amber-700">Quickly scan the QR code</p>
-                    </div>
-                    <div class="text-center">
-                        <div class="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i data-feather="trending-up" class="text-amber-600"></i>
-                        </div>
-                        <h3 class="font-bold text-amber-800 mb-2">3. Track</h3>
-                        <p class="text-amber-700">Watch your coffee count rise</p>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <main class="container mx-auto px-4 grid md:grid-cols-2 gap-8 mb-10">
+    <!-- Scan Card -->
+    <div class="coffee-card bg-white rounded-2xl p-6 text-center">
+      <i data-feather="smartphone" class="text-amber-600 w-10 h-10 mx-auto mb-3"></i>
+      <h2 class="text-2xl font-bold text-amber-900 mb-2">Log Your Coffee</h2>
+      <p class="text-amber-700 mb-6">Scan or tap below to record your next cup!</p>
+      <img src="qr_k2.png" alt="QR code" class="w-40 h-40 mx-auto mb-6 rounded-xl border border-amber-200">
+      <a href="scan.html" class="block bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-lg font-semibold">
+        Go to Scan Page
+      </a>
     </div>
 
-    <footer class="bg-amber-900 text-amber-100 py-6 mt-12">
-        <div class="container mx-auto px-4 text-center">
-            <p>Made with <i data-feather="heart" class="inline text-rose-400 w-4 h-4"></i> and <i data-feather="coffee" class="inline text-amber-300 w-4 h-4"></i> for coffee lovers</p>
-            <p class="mt-2 text-sm">JavaJolt Junkies © 2023</p>
-        </div>
-    </footer>
+    <!-- Leaderboard Card -->
+    <div class="coffee-card bg-white rounded-2xl p-6 text-center">
+      <i data-feather="bar-chart-2" class="text-amber-600 w-10 h-10 mx-auto mb-3"></i>
+      <h2 class="text-2xl font-bold text-amber-900 mb-2">Leaderboard</h2>
+      <p class="text-amber-700 mb-6">See who’s fueling the most productivity in your room 🔥</p>
+      <div class="text-center">
+        <a href="stats.html" class="inline-block bg-amber-600 hover:bg-amber-700 text-white py-3 px-6 rounded-lg font-semibold">
+          View Full Leaderboard
+        </a>
+      </div>
+    </div>
+  </main>
 
-    <script>
-        feather.replace();
-        // Simple animation for coffee cards
-        document.querySelectorAll('.coffee-card').forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.classList.add('shadow-lg');
-            });
-            card.addEventListener('mouseleave', () => {
-                card.classList.remove('shadow-lg');
-            });
-        });
-    </script>
+  <footer class="bg-amber-900 text-amber-100 text-center py-6 mt-auto">
+    <p>Made with <i data-feather="heart" class="inline w-4 h-4 text-rose-400"></i> and <i data-feather="coffee" class="inline w-4 h-4 text-amber-300"></i> by your caffeine crew</p>
+    <p class="text-sm mt-2 opacity-80">JavaJolt Junkies © 2025</p>
+  </footer>
+
+  <script>
+    feather.replace();
+  </script>
 </body>
 </html>
 
