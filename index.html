@@ -1,68 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coffee Tracker | JavaJolt Junkies</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://unpkg.com/feather-icons"></script>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #fff7ed, #fde68a);
-    }
-    .coffee-card {
-      transition: all 0.3s ease;
-    }
-    .coffee-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 12px rgba(0,0,0,0.1);
-    }
-  </style>
-</head>
-<body class="min-h-screen flex flex-col justify-between">
-
-  <header class="text-center mt-10 mb-8">
-    <h1 class="text-5xl font-extrabold text-amber-900 flex items-center justify-center gap-2">
-      JavaJolt Junkies <i data-feather="coffee" class="text-amber-700 w-8 h-8"></i>
-    </h1>
-    <p class="text-amber-800 mt-2 text-lg">Track your team’s coffee intake with style ☕</p>
-  </header>
-
-  <main class="container mx-auto px-4 grid md:grid-cols-2 gap-8 mb-10">
-    <!-- Scan Card -->
-    <div class="coffee-card bg-white rounded-2xl p-6 text-center">
-      <i data-feather="smartphone" class="text-amber-600 w-10 h-10 mx-auto mb-3"></i>
-      <h2 class="text-2xl font-bold text-amber-900 mb-2">Log Your Coffee</h2>
-      <p class="text-amber-700 mb-6">Scan or tap below to record your next cup!</p>
-      <img src="qr_k2.png" alt="QR code" class="w-40 h-40 mx-auto mb-6 rounded-xl border border-amber-200">
-      <a href="scan.html" class="block bg-amber-600 hover:bg-amber-700 text-white py-3 rounded-lg font-semibold">
-        Go to Scan Page
-      </a>
-    </div>
-
-    <!-- Leaderboard Card -->
-    <div class="coffee-card bg-white rounded-2xl p-6 text-center">
-      <i data-feather="bar-chart-2" class="text-amber-600 w-10 h-10 mx-auto mb-3"></i>
-      <h2 class="text-2xl font-bold text-amber-900 mb-2">Leaderboard</h2>
-      <p class="text-amber-700 mb-6">See who’s fueling the most productivity in your room 🔥</p>
-      <div class="text-center">
-        <a href="stats.html" class="inline-block bg-amber-600 hover:bg-amber-700 text-white py-3 px-6 rounded-lg font-semibold">
-          View Full Leaderboard
-        </a>
-      </div>
-    </div>
-  </main>
-
-  <footer class="bg-amber-900 text-amber-100 text-center py-6 mt-auto">
-    <p>Made with <i data-feather="heart" class="inline w-4 h-4 text-rose-400"></i> and <i data-feather="coffee" class="inline w-4 h-4 text-amber-300"></i> by your caffeine crew</p>
-    <p class="text-sm mt-2 opacity-80">JavaJolt Junkies © 2025</p>
-  </footer>
-
-  <script>
-    feather.replace();
-  </script>
-</body>
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JavaJolt Junkies - Coffee Tracker</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>
-
