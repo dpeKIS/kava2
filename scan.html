@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan | JavaJolt Junkies</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .btn-google {
+            transition: all 0.3s ease;
+        }
+        .btn-google:hover {
+            box-shadow: 0 2px 10px rgba(66, 133, 244, 0.3);
+        }
+        .employee-btn {
+            transition: all 0.2s ease;
+        }
+        .employee-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0ad4e;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+            <!-- Header -->
+            <div class="bg-amber-600 p-6 text-center">
+                <i data-feather="coffee" class="text-white w-12 h-12 mx-auto mb-4"></i>
+                <h1 class="text-2xl font-bold text-white">Log Your Coffee</h1>
+            </div>
+
+            <!-- Main Content -->
+            <div class="p-6" id="login-section">
+                <p class="text-amber-800 mb-6 text-center">
+                    Sign in to track your coffee consumption
+                </p>
+                
+                <!-- Google Sign-In Button -->
+                <button onclick="handleGoogleSignIn()" class="btn-google w-full flex items-center justify-center bg-white border border-gray-300 rounded-lg py-3 px-4 mb-4 text-gray-700 font-medium">
+                    <i data-feather="log-in" class="mr-2 text-blue-500"></i>
+                    Sign in with Google
+                </button>
+                
+                <div class="flex items-center my-6">
+                    <div class="flex-grow border-t border-amber-200"></div>
+                    <span class="mx-4 text-amber-500">or</span>
+                    <div class="flex-grow border-t border-amber-200"></div>
+                </div>
+                
+                <!-- Fallback Employee List -->
+                <h3 class="text-center text-amber-800 font-medium mb-4">Select your name</h3>
+                <div class="grid grid-cols-2 gap-3 mb-6" id="employee-list">
+                    <!-- Employees will be populated here -->
+                </div>
+            </div>
+
+            <!-- Confirmation Section (hidden by default) -->
+            <div class="p-6 text-center hidden" id="confirmation-section">
+                <div class="relative">
+                    <div class="w-24 h-24 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i data-feather="check-circle" class="text-amber-600 w-12 h-12"></i>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold text-amber-900 mb-2">Thank you, <span id="user-name">Alex</span>!</h2>
+                <p class="text-amber-800 mb-6">This is your <span id="coffee-count" class="font-bold">4th</span> coffee today <i data-feather="coffee" class="inline text-amber-600 w-5 h-5"></i></p>
+                <button onclick="resetForm()" class="w-full bg-amber-600 hover:bg-amber-700 text-white py-3 px-4 rounded-lg font-medium transition duration-300">
+                    Log Another Coffee
+                </button>
+            </div>
+        </div>
+        
+        <div class="text-center mt-6">
+            <a href="/stats" class="text-amber-700 hover:text-amber-900 font-medium inline-flex items-center">
+                View Leaderboard <i data-feather="arrow-right" class="ml-1 w-4 h-4"></i>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        feather.replace();
+        
+        // Sample employee data - in a real app this would come from an API
+        const employees = [
+            { id: 1, name: 'Alex Johnson', coffeeCount: 3 },
+            { id: 2, name: 'Sam Wilson', coffeeCount: 5 },
+            { id: 3, name: 'Taylor Smith', coffeeCount: 2 },
+            { id: 4, name: 'Jordan Lee', coffeeCount: 7 },
+            { id: 5, name: 'Casey Brown', coffeeCount: 1 },
+            { id: 6, name: 'Morgan Taylor', coffeeCount: 4 }
+        ];
+        
+        // Populate employee list
+        const employeeList = document.getElementById('employee-list');
+        employees.forEach(employee => {
+            const btn = document.createElement('button');
+            btn.className = 'employee-btn bg-amber-50 hover:bg-amber-100 text-amber-800 py-3 px-4 rounded-lg font-medium';
+            btn.innerHTML = `${employee.name} <span class="text-amber-600 text-sm">(${employee.coffeeCount} ☕)</span>`;
+            btn.onclick = () => handleEmployeeSelect(employee);
+            employeeList.appendChild(btn);
+        });
+        
+        // Mock Google sign-in handler
+        function handleGoogleSignIn() {
+            // In a real app, this would use the Google OAuth API
+            console.log('Google sign-in clicked');
+            // For demo purposes, we'll simulate a successful login
+            simulateLogin({ name: 'Google User', coffeeCount: 3 });
+        }
+        
+        // Employee selection handler
+        function handleEmployeeSelect(employee) {
+            simulateLogin(employee);
+        }
+        
+        // Simulate login flow
+        function simulateLogin(user) {
+            // Hide login section, show confirmation
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('confirmation-section').classList.remove('hidden');
+            
+            // Update user info
+            document.getElementById('user-name').textContent = user.name.split(' ')[0];
+            document.getElementById('coffee-count').textContent = 
+                user.coffeeCount === 1 ? '1st' : 
+                user.coffeeCount === 2 ? '2nd' : 
+                user.coffeeCount === 3 ? '3rd' : 
+                `${user.coffeeCount}th`;
+            
+            // Create some simple confetti effect
+            createConfetti();
+        }
+        
+        // Reset form
+        function resetForm() {
+            document.getElementById('login-section').classList.remove('hidden');
+            document.getElementById('confirmation-section').classList.add('hidden');
+        }
+        
+        // Simple confetti effect
+        function createConfetti() {
+            const container = document.querySelector('.relative');
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.top = -10 + 'px';
+                container.appendChild(confetti);
+                
+                // Animate
+                setTimeout(() => {
+                    confetti.style.opacity = '1';
+                    confetti.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * 100 + 100}px) rotate(${Math.random() * 360}deg)`;
+                    confetti.style.transition = `all ${Math.random() * 1 + 0.5}s ease`;
+                    
+                    // Remove after animation
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 1500);
+                }, i * 100);
+            }
+        }
+    </script>
+</body>
+</html>
+
