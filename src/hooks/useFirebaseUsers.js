@@ -18,6 +18,16 @@ export const useFirebaseUsers = () => {
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Domyślni użytkownicy (fallback gdy Firebase nie działa)
+  const defaultUsers = [
+    { id: 'alex-johnson', name: 'Alex Johnson', email: 'alex@company.com', coffeeCount: 0, badge: 'Nowy', lastScan: null },
+    { id: 'sam-wilson', name: 'Sam Wilson', email: 'sam@company.com', coffeeCount: 0, badge: 'Nowy', lastScan: null },
+    { id: 'taylor-smith', name: 'Taylor Smith', email: 'taylor@company.com', coffeeCount: 0, badge: 'Nowy', lastScan: null },
+    { id: 'jordan-lee', name: 'Jordan Lee', email: 'jordan@company.com', coffeeCount: 0, badge: 'Nowy', lastScan: null },
+    { id: 'casey-brown', name: 'Casey Brown', email: 'casey@company.com', coffeeCount: 0, badge: 'Nowy', lastScan: null },
+    { id: 'morgan-taylor', name: 'Morgan Taylor', email: 'morgan@company.com', coffeeCount: 0, badge: 'Nowy', lastScan: null }
+  ];
+
   // Funkcja do określania odznaki na podstawie liczby kaw
   const getBadgeForCount = (count) => {
     if (count === 0) return 'Nowy'
@@ -28,17 +38,10 @@ export const useFirebaseUsers = () => {
     return 'Legenda'
   };
 
-  // Inicjalizacja domyślnych użytkowników
+  // Inicjalizacja domyślnych użytkowników w Firebase
   const initializeDefaultUsers = async () => {
-    const defaultUsers = [
-      { id: 'alex-johnson', name: 'Alex Johnson', email: 'alex@company.com' },
-      { id: 'sam-wilson', name: 'Sam Wilson', email: 'sam@company.com' },
-      { id: 'taylor-smith', name: 'Taylor Smith', email: 'taylor@company.com' },
-      { id: 'jordan-lee', name: 'Jordan Lee', email: 'jordan@company.com' },
-      { id: 'casey-brown', name: 'Casey Brown', email: 'casey@company.com' },
-      { id: 'morgan-taylor', name: 'Morgan Taylor', email: 'morgan@company.com' }
-    ];
-
+    if (!db) return;
+    
     try {
       const usersSnapshot = await getDocs(collection(db, 'users'));
       
@@ -47,9 +50,6 @@ export const useFirebaseUsers = () => {
         for (const user of defaultUsers) {
           await setDoc(doc(db, 'users', user.id), {
             ...user,
-            coffeeCount: 0,
-            badge: 'Nowy',
-            lastScan: null,
             createdAt: serverTimestamp()
           });
         }
@@ -59,71 +59,144 @@ export const useFirebaseUsers = () => {
     }
   };
 
-  // Nasłuchiwanie zmian użytkowników
+  // Nasłuchiwanie zmian użytkowników lub fallback do localStorage
   useEffect(() => {
-    const unsubscribeUsers = onSnapshot(
-      query(collection(db, 'users'), orderBy('coffeeCount', 'desc')),
-      (snapshot) => {
-        const usersData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setUsers(usersData);
-        setLoading(false);
-      },
-      (error) => {
-        console.error('Błąd podczas pobierania użytkowników:', error);
-        setLoading(false);
-      }
-    );
+    if (db) {
+      // Używaj Firebase
+      const unsubscribeUsers = onSnapshot(
+        query(collection(db, 'users'), orderBy('coffeeCount', 'desc')),
+        (snapshot) => {
+          const usersData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setUsers(usersData);
+          setLoading(false);
+        },
+        (error) => {
+          console.error('Błąd podczas pobierania użytkowników:', error);
+          // Fallback do localStorage
+          loadFromLocalStorage();
+        }
+      );
 
-    // Nasłuchiwanie aktywności
-    const unsubscribeActivity = onSnapshot(
-      query(collection(db, 'activity'), orderBy('timestamp', 'desc')),
-      (snapshot) => {
-        const activityData = snapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setRecentActivity(activityData.slice(0, 10)); // Ostatnie 10 aktywności
-      }
-    );
+      // Nasłuchiwanie aktywności
+      const unsubscribeActivity = onSnapshot(
+        query(collection(db, 'activity'), orderBy('timestamp', 'desc')),
+        (snapshot) => {
+          const activityData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          }));
+          setRecentActivity(activityData.slice(0, 10));
+        },
+        (error) => {
+          console.error('Błąd podczas pobierania aktywności:', error);
+        }
+      );
 
-    // Inicjalizacja domyślnych użytkowników
-    initializeDefaultUsers();
+      // Inicjalizacja domyślnych użytkowników
+      initializeDefaultUsers();
 
-    return () => {
-      unsubscribeUsers();
-      unsubscribeActivity();
-    };
+      return () => {
+        unsubscribeUsers();
+        unsubscribeActivity();
+      };
+    } else {
+      // Fallback do localStorage
+      loadFromLocalStorage();
+    }
   }, []);
+
+  // Fallback - ładowanie z localStorage
+  const loadFromLocalStorage = () => {
+    try {
+      const savedUsers = localStorage.getItem('coffee-tracker-users');
+      const savedActivity = localStorage.getItem('coffee-tracker-activity');
+      
+      if (savedUsers) {
+        const parsedUsers = JSON.parse(savedUsers);
+        setUsers(parsedUsers.sort((a, b) => (b.coffeeCount || 0) - (a.coffeeCount || 0)));
+      } else {
+        setUsers(defaultUsers);
+        localStorage.setItem('coffee-tracker-users', JSON.stringify(defaultUsers));
+      }
+      
+      if (savedActivity) {
+        setRecentActivity(JSON.parse(savedActivity));
+      }
+      
+      setLoading(false);
+    } catch (error) {
+      console.error('Błąd localStorage:', error);
+      setUsers(defaultUsers);
+      setLoading(false);
+    }
+  };
+
+  // Zapisywanie do localStorage
+  const saveToLocalStorage = (updatedUsers, updatedActivity) => {
+    try {
+      localStorage.setItem('coffee-tracker-users', JSON.stringify(updatedUsers));
+      if (updatedActivity) {
+        localStorage.setItem('coffee-tracker-activity', JSON.stringify(updatedActivity));
+      }
+    } catch (error) {
+      console.error('Błąd zapisu localStorage:', error);
+    }
+  };
 
   // Dodawanie kawy
   const addCoffee = async (userId) => {
     try {
-      const userRef = doc(db, 'users', userId);
       const user = users.find(u => u.id === userId);
-      
       if (!user) return;
 
-      const newCount = user.coffeeCount + 1;
+      const newCount = (user.coffeeCount || 0) + 1;
       const newBadge = getBadgeForCount(newCount);
+      const timestamp = new Date().toISOString();
 
-      // Aktualizuj użytkownika
-      await updateDoc(userRef, {
-        coffeeCount: increment(1),
-        badge: newBadge,
-        lastScan: serverTimestamp()
-      });
+      if (db) {
+        // Używaj Firebase
+        const userRef = doc(db, 'users', userId);
+        
+        await updateDoc(userRef, {
+          coffeeCount: increment(1),
+          badge: newBadge,
+          lastScan: serverTimestamp()
+        });
 
-      // Dodaj aktywność
-      await setDoc(doc(collection(db, 'activity')), {
-        userId: userId,
-        userName: user.name,
-        action: 'dodał kawę',
-        coffeeCount: newCount,
-        timestamp: serverTimestamp()
-      });
+        // Dodaj aktywność
+        await setDoc(doc(collection(db, 'activity')), {
+          userId: userId,
+          userName: user.name,
+          action: 'dodał kawę',
+          coffeeCount: newCount,
+          timestamp: serverTimestamp()
+        });
+      } else {
+        // Fallback do localStorage
+        const updatedUsers = users.map(u => 
+          u.id === userId 
+            ? { ...u, coffeeCount: newCount, badge: newBadge, lastScan: timestamp }
+            : u
+        ).sort((a, b) => (b.coffeeCount || 0) - (a.coffeeCount || 0));
+
+        const newActivity = {
+          id: Date.now().toString(),
+          userId: userId,
+          userName: user.name,
+          action: 'dodał kawę',
+          coffeeCount: newCount,
+          timestamp: timestamp
+        };
+
+        const updatedActivity = [newActivity, ...recentActivity.slice(0, 9)];
+
+        setUsers(updatedUsers);
+        setRecentActivity(updatedActivity);
+        saveToLocalStorage(updatedUsers, updatedActivity);
+      }
 
     } catch (error) {
       console.error('Błąd podczas dodawania kawy:', error);
@@ -133,7 +206,7 @@ export const useFirebaseUsers = () => {
   // Dodawanie użytkownika Google
   const addGoogleUser = async (googleUser) => {
     try {
-      const userId = googleUser.email.replace('@', '-').replace('.', '-');
+      const userId = googleUser.email.replace(/[@.]/g, '-');
       const existingUser = users.find(u => u.email === googleUser.email);
       
       if (existingUser) {
@@ -147,12 +220,23 @@ export const useFirebaseUsers = () => {
         coffeeCount: 0,
         badge: 'Nowy',
         lastScan: null,
-        isGoogleUser: true,
-        createdAt: serverTimestamp()
+        isGoogleUser: true
       };
 
-      await setDoc(doc(db, 'users', userId), newUser);
-      return { ...newUser, id: userId };
+      if (db) {
+        // Używaj Firebase
+        await setDoc(doc(db, 'users', userId), {
+          ...newUser,
+          createdAt: serverTimestamp()
+        });
+      } else {
+        // Fallback do localStorage
+        const updatedUsers = [...users, newUser];
+        setUsers(updatedUsers);
+        saveToLocalStorage(updatedUsers);
+      }
+
+      return newUser;
     } catch (error) {
       console.error('Błąd podczas dodawania użytkownika Google:', error);
       return null;

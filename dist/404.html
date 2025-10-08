@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Tracker - Przekierowanie</title>
+    <script>
+        // Przekierowanie dla GitHub Pages SPA
+        const path = window.location.pathname.replace('/coffee-tracker', '');
+        const query = window.location.search;
+        const hash = window.location.hash;
+        
+        window.location.href = '/coffee-tracker/' + (path === '/' ? '' : path) + query + hash;
+    </script>
+</head>
+<body>
+    <div style="text-align: center; padding: 50px; font-family: Arial, sans-serif;">
+        <h1>☕ Coffee Tracker</h1>
+        <p>Przekierowywanie...</p>
+        <p>Jeśli nie zostałeś przekierowany automatycznie, <a href="/coffee-tracker/">kliknij tutaj</a>.</p>
+    </div>
+</body>
+</html>

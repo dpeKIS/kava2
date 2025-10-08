@@ -7,26 +7,48 @@ import { LogIn, LogOut, User } from 'lucide-react';
 const FirebaseAuth = ({ onUserChange, currentUser }) => {
   const [firebaseUser, setFirebaseUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [firebaseAvailable, setFirebaseAvailable] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setFirebaseUser(user);
-      setLoading(false);
-      
-      if (user && onUserChange) {
-        // Przekaż dane użytkownika do rodzica
-        onUserChange({
-          name: user.displayName,
-          email: user.email,
-          picture: user.photoURL
-        });
-      }
-    });
+    if (auth && googleProvider) {
+      setFirebaseAvailable(true);
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        setFirebaseUser(user);
+        setLoading(false);
+        
+        if (user && onUserChange) {
+          // Przekaż dane użytkownika do rodzica
+          onUserChange({
+            name: user.displayName,
+            email: user.email,
+            picture: user.photoURL
+          });
+        }
+      });
 
-    return () => unsubscribe();
+      return () => unsubscribe();
+    } else {
+      // Firebase nie jest dostępny
+      setFirebaseAvailable(false);
+      setLoading(false);
+    }
   }, [onUserChange]);
 
   const handleGoogleSignIn = async () => {
+    if (!firebaseAvailable) {
+      // Mock logowanie gdy Firebase nie działa
+      const mockUser = {
+        name: 'Demo User',
+        email: 'demo@example.com',
+        picture: null
+      };
+      
+      if (onUserChange) {
+        onUserChange(mockUser);
+      }
+      return;
+    }
+
     try {
       setLoading(true);
       const result = await signInWithPopup(auth, googleProvider);
@@ -41,6 +63,16 @@ const FirebaseAuth = ({ onUserChange, currentUser }) => {
       }
     } catch (error) {
       console.error('Błąd podczas logowania:', error);
+      // Fallback do mock logowania
+      const mockUser = {
+        name: 'Demo User',
+        email: 'demo@example.com',
+        picture: null
+      };
+      
+      if (onUserChange) {
+        onUserChange(mockUser);
+      }
     } finally {
       setLoading(false);
     }
@@ -48,12 +80,17 @@ const FirebaseAuth = ({ onUserChange, currentUser }) => {
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      if (firebaseAvailable && auth) {
+        await signOut(auth);
+      }
       if (onUserChange) {
         onUserChange(null);
       }
     } catch (error) {
       console.error('Błąd podczas wylogowania:', error);
+      if (onUserChange) {
+        onUserChange(null);
+      }
     }
   };
 
@@ -66,14 +103,15 @@ const FirebaseAuth = ({ onUserChange, currentUser }) => {
     );
   }
 
-  if (firebaseUser) {
+  if (firebaseUser || (!firebaseAvailable && currentUser)) {
+    const user = firebaseUser || currentUser;
     return (
       <div className="space-y-3">
         <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
-          {firebaseUser.photoURL ? (
+          {user.photoURL || user.picture ? (
             <img 
-              src={firebaseUser.photoURL} 
-              alt={firebaseUser.displayName}
+              src={user.photoURL || user.picture} 
+              alt={user.displayName || user.name}
               className="w-10 h-10 rounded-full"
             />
           ) : (
@@ -82,8 +120,11 @@ const FirebaseAuth = ({ onUserChange, currentUser }) => {
             </div>
           )}
           <div className="flex-1">
-            <p className="font-medium text-amber-800">{firebaseUser.displayName}</p>
-            <p className="text-sm text-amber-600">{firebaseUser.email}</p>
+            <p className="font-medium text-amber-800">{user.displayName || user.name}</p>
+            <p className="text-sm text-amber-600">{user.email}</p>
+            {!firebaseAvailable && (
+              <p className="text-xs text-amber-500">Demo Mode</p>
+            )}
           </div>
         </div>
         
@@ -112,7 +153,7 @@ const FirebaseAuth = ({ onUserChange, currentUser }) => {
           <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
           <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
         </svg>
-        Zaloguj się przez Google
+        {firebaseAvailable ? 'Zaloguj się przez Google' : 'Demo Login (Firebase niedostępny)'}
       </div>
     </Button>
   );
